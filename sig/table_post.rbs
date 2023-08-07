@@ -1,0 +1,9 @@
+class TablePost
+
+  attr_accessor title: string
+
+  attr_accessor comments_count: int
+
+  attr_accessor url: string
+
+end

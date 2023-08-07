@@ -1,0 +1,19 @@
+class Tokens
+
+  @db: DbWrapper
+
+  attr_accessor access: string
+
+  attr_accessor refresh: string
+
+  def init: -> void
+
+  def update: (string, string) -> void
+
+  private
+
+  def read: -> void
+
+  def save: (string, string) -> void
+
+end

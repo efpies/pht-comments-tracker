@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Комменты Physical Transformation</title>
+    <style>
+            body {
+                font-size: 1.1em;
+                font-family: sans-serif;
+            }
+
+            @media screen  and (max-device-width: 480px) and (orientation: portrait) {
+                body {
+                    font-size: 2em;
+                }
+            }
+
+            .container {
+                max-width: 1000px;
+            }
+
+            table {
+                border-collapse: collapse;
+                width: 100%;
+            }
+
+            tr {
+                min-height: 44px;
+                height: 44px;
+            }
+
+            tr:first-child {
+                border-top: 1px solid gray;
+                border-bottom: 1px solid gray;
+            }
+
+            tr:last-child {
+                border-bottom: 1px solid gray;
+            }
+
+            tr:nth-child(even) {
+                background-color: #f2f2f2
+            }
+
+            th, td {
+                text-align: left;
+                padding: 8px;
+                user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                -webkit-user-select: none;
+                border-left: 1px solid gray;
+                border-right: 1px solid gray;
+            }
+
+            th {
+                background-color: #4CAF50;
+                color: white;
+            }
+
+            th, td:nth-child(2), td:nth-child(3), td:nth-child(4) {
+                text-align: center;
+            }
+
+            th:nth-child(2), th:nth-child(3), th:nth-child(4),
+            td:nth-child(2), td:nth-child(3), td:nth-child(4) {
+                width: 10%;
+            }
+
+            td:nth-child(4) {
+                user-select: all;
+                -moz-user-select: all;
+                -ms-user-select: all;
+                -webkit-user-select: all;
+            }
+
+            td.error {
+                background-color: #ff0000;
+                color: white;
+            }
+
+            .has-new {
+                background-color: #ff000055;
+            }
+
+            button {
+                font-size: 1.1em;
+                margin-top: 10px;
+                margin-bottom: 10px;
+                padding: 10px;
+                -webkit-appearance: none;
+            }
+
+            #comments, #error {
+                display: none;
+            }
+
+            .time {
+                font-weight: bold;
+            }
+
+            .hint-emphasis {
+                font-weight: bold;
+            }
+
+            .hint-emphasis.quoted::before {
+                content: '«';
+            }
+
+            .hint-emphasis.quoted::after {
+                content: '»';
+            }
+
+            .how-to {
+                border-radius: 20px;
+                padding: 20px;
+                background-color: #dcdcdc;
+                display: none;
+            }
+
+            .how-to .header {
+                font-size: 1.5em;
+                font-weight: bold;
+            }
+
+            #how-to-invite button {
+                background-color: mediumaquamarine;
+            }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="loader">
+        <h1>Загрузка...</h1>
+    </div>
+    <div id="error">
+        <h1>Ошибка загрузки</h1>
+        <p id="error-description"></p>
+    </div>
+    <div id="comments">
+        <div id="how-to-invite"><button onclick="showHint(true)">Инструкция</button></div>
+        <div id="how-to" class="how-to">
+            <div class="header">Как пользоваться страничкой-табличкой?</div>
+            <p>Эта страничка показывает данные из <a target="_blank" href="https://docs.google.com/spreadsheets/d/1Zh9uAknzgvFKViQKNoXLDYWdEloASZ_bYnis_QZPWr0/">таблички</a>, с которой работают кураторы, работающие с комментами.</p>
+            <p>При открытии страницы происходит загрузка количества комментов для статей, которые расположены на вкладках <span class="hint-emphasis quoted">Новые посты</span> и <span class="hint-emphasis quoted">Старые посты</span>, по ссылкам из колонки <span class="hint-emphasis quoted">Ссылка на пост</span>.</p>
+            <p>В колонке <span class="hint-emphasis quoted">Было</span> находится последнее записанное количество комментов из таблицы.</p>
+            <p>В колонке <span class="hint-emphasis quoted">Стало</span> — количество комментов в статье на текущий момент. Если появились новые, это выделяется <span class="has-new">цветом</span>.</p>
+            <p>Для удобства над таблицами написано время <span class="hint-emphasis quoted">Было</span> (<span class="hint-emphasis quoted">Последний просмотр</span>) и время <span class="hint-emphasis quoted">Стало</span> (<span class="hint-emphasis quoted">Сейчас</span>). Так будет понятнее, в какую колонку писать актуальное количество комментов.</p>
+            <p>А, да. Чтобы не вбивать ручками циферки новых комментов, можно просто нажать на кнопку <span class="hint-emphasis quoted">Скопировать количество комментов</span>.</p>
+            <p>Возможно, кнопка не работает. Тогда можно просто выделить текст в колонке и вставить.</p>
+            <p><span class="hint-emphasis">Внимание!</span> Если не обновлять нужную табличку, чуда не будет!</p>
+            <p>Потому план такой:</p>
+            <p>1. Открываешь данную страничку, когда надо проверить комменты.</p>
+            <p>2. Ищешь, где есть новые комменты.</p>
+            <p>3. Видишь новые — переходишь по ссылке.</p>
+            <p>4. Как закончил — копируй количество новых комментов и вставляй в нужную колонку таблицы. Не забудь скорректировать цифры, если отвечал.</p>
+            <p style="font-style: italic">Автор — Никлас, рекламации отправлять ему.</p>
+            <button onclick="showHint(false)">Скрыть инструкцию</button>
+        </div>
+
+        <template id="comments-section">
+            <h3>Новые посты</h3>
+            <div>Последний просмотр: <span class="last-check time"></span> МСК, сейчас: <span class="current-time time"></span> МСК</div>
+
+            <button>Скопировать количество новых комментов</button>
+            <table class="comments-section-comments">
+                <tr>
+                    <th>Заголовок</th>
+                    <th>Ссылка</th>
+                    <th>Было</th>
+                    <th>Стало</th>
+                </tr>
+            </table>
+        </template>
+
+        <div id="comments-container">
+        </div>
+    </div>
+</div>
+
+<script>
+    const commentsSectionTemplate = document.getElementById("comments-section");
+    const commentSections = [
+        {
+            "key": "new",
+            "title": "Новые посты",
+        },
+        {
+            "key": "old",
+            "title": "Старые посты",
+        },
+    ];
+
+    function showHint(show) {
+        document.getElementById("how-to").style.display = show ? "block" : "none";
+        document.getElementById("how-to-invite").style.display = show ? "none" : "block";
+    }
+
+    async function fetchComments() {
+        return await fetch("https://dzhtdpmctlkydvyks7nqijgkt40hvnha.lambda-url.eu-north-1.on.aws");
+    }
+
+    function insertComment(table, comment) {
+        let row = table.insertRow();
+        row.insertCell().innerHTML = comment["title"];
+
+        if (comment["error"] !== undefined)
+        {
+            const errorCell = row.insertCell();
+            errorCell.innerHTML = comment["error"];
+            errorCell.classList.add('error');
+            errorCell.colSpan = 3;
+            return;
+        }
+
+        row.insertCell().innerHTML = `<a target="_blank" href="${comment["url"]}">Ссылка</a>`
+
+        let oldCommentsCount = comment["old_comments_count"];
+        let newCommentsCount = comment["new_comments_count"];
+        row.insertCell().innerHTML = oldCommentsCount
+        const new_cell = row.insertCell()
+        new_cell.innerHTML = newCommentsCount
+
+        if (newCommentsCount > oldCommentsCount) {
+            new_cell.classList.add('has-new');
+        }
+    }
+
+    function timeInUTC3() {
+        const now = new Date();
+        let utc = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
+
+        const offsetUTC3 = 3 * 60; // Offset in minutes for UTC+3
+        utc.setMinutes(utc.getMinutes() + offsetUTC3);
+        const hours = utc.getHours();
+        const minutes = utc.getMinutes();
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    }
+
+    let comments;
+    fetchComments().then(function (response) {
+        if (!response.ok) {
+            document.getElementById("loader").style.display = "none";
+            document.getElementById("error").style.display = "block";
+            document.getElementById("error-description").innerHTML = response.statusText;
+            return;
+        }
+
+        document.getElementById("loader").style.display = "none";
+        document.getElementById("comments").style.display = "block";
+        response.json().then(function (newComments) {
+            comments = newComments;
+
+            commentSections.forEach(function (section) {
+                const key = section['key'];
+                const posts = comments[key]['posts'];
+                if (posts === undefined || posts === null || posts.length === 0) {
+                    return;
+                }
+
+                const sectionElement = commentsSectionTemplate.content.cloneNode(true);
+                sectionElement.querySelector("h3").innerHTML = section["title"];
+                sectionElement.querySelector("button").onclick = function() {
+                    copyCommentsCount(key);
+                };
+
+                const lastCheck = sectionElement.querySelector(".last-check");
+                lastCheck.innerHTML = comments[key]['time'];
+
+                const table = sectionElement.querySelector("table");
+                posts.forEach(function (comment) {
+                    insertComment(table, comment);
+                });
+
+                const commentsContainer = document.getElementById("comments-container");
+                commentsContainer.appendChild(document.createElement("hr"));
+                commentsContainer.appendChild(sectionElement);
+            });
+
+            const timeMsk = timeInUTC3();
+            const currentTime = document.getElementsByClassName("current-time");
+            Array.from(currentTime).forEach(function (element) {
+                element.innerHTML = timeMsk;
+            });
+        });
+    });
+
+    function getNewCommentsCount(posts) {
+        return posts.map(function (comment) {
+            return comment["new_comments_count"];
+        });
+    }
+
+    function copyCommentsCount(key) {
+        const data = getNewCommentsCount(comments[key]['posts']).join("\n");
+        copyToClipboard(data);
+    }
+
+    function copyToClipboard(text) {
+        // Create a temporary textarea element to hold the text to be copied
+        const tempTextArea = document.createElement('textarea');
+        tempTextArea.value = text;
+        document.body.appendChild(tempTextArea);
+
+        // Select the text in the textarea
+        tempTextArea.select();
+        tempTextArea.setSelectionRange(0, 99999); // For mobile devices
+
+        // Copy the selected text to the clipboard
+        document.execCommand('copy');
+
+        // Remove the temporary textarea from the DOM
+        document.body.removeChild(tempTextArea);
+    }
+</script>
+</body>
+</html>

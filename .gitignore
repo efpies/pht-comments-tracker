@@ -1,6 +1,7 @@
 *.gem
 *.rbc
 /.config
+/.idea
 /coverage/
 /InstalledFiles
 /pkg/
@@ -40,6 +41,7 @@ build-iPhoneSimulator/
 
 ## Environment normalization:
 /.bundle/
+/vendor
 /vendor/bundle
 /lib/bundler/man/
 
@@ -54,3 +56,7 @@ build-iPhoneSimulator/
 
 # Used by RuboCop. Remote config files pulled in from inherit_from directive.
 # .rubocop-https?--*
+
+# deployment
+/deploy/
+deployment-package.zip

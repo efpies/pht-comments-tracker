@@ -1,0 +1,5 @@
+class SheetsClient
+
+  attr_reader service: Google::Apis::SheetsV4::SheetsService
+
+end

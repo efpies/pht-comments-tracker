@@ -1,0 +1,7 @@
+module GetPostsInfoStrategy
+
+  def fetch_posts_info: -> [TablePost, string]
+
+  def get_posts_info: -> [TablePost, string]
+
+end

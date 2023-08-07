@@ -1,0 +1,13 @@
+class DbWrapper
+
+  @db: Aws::DynamoDB::Client
+
+  @tokens_table_name: string
+
+  def initialize: (string) -> void
+
+  def all_tokens: -> [string, string]
+
+  def put_tokens: (string, string) -> untyped
+
+end
