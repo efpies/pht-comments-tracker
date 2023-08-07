@@ -28,12 +28,12 @@ class ContentGetPostsInfoStrategy
       response = @sheets_client.service.get_spreadsheet_values(@spreadsheet_id, range)
       rows = response.values
 
-      first_row = rows.find_index { |row| !row.empty? && row[0].match?(/\d{2}\.\d{2}\.\d{2,4}/) }
+      first_row = rows.find_index { |row| row[0].to_s.date? }
       return [[], nil] unless first_row
 
       time_table = rows[first_row - 1][CELL_IDX[:time_table_begin]..]
 
-      posts = rows[first_row..].take_while { |row| !row.empty? && row[0].match?(/\d{2}\.\d{2}\.\d{2,4}/) }.to_a
+      posts = rows[first_row..].take_while { |row| row[0].to_s.date? }.to_a
 
       filled_times = posts[0][CELL_IDX[:time_table_begin]..]
       last_time = filled_times.length - 1

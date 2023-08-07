@@ -3,3 +3,9 @@ class Hash[unchecked out K, unchecked out V]
   def symbolize_keys: () -> Hash[Symbol, V]
 
 end
+
+class String
+
+  def date?: () -> bool
+
+end
