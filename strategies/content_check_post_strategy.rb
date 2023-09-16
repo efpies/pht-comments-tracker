@@ -29,10 +29,14 @@ class ContentCheckPostStrategy
     end
 
     json = @pht_client.fetch_content_post(id)
+
+    new_comments_count = json['comments_count']
+    new_comments_count = 'н/к' if new_comments_count.zero? && json['disable_comments']
+
     {
       title: json['title'],
       old_comments_count: old_count,
-      new_comments_count: json['comments_count'],
+      new_comments_count: new_comments_count,
       url: post.url
     }
   end
