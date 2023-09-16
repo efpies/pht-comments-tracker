@@ -2,6 +2,7 @@
 
 require_relative 'get_posts_info_strategy'
 require_relative '../service/sheets_client'
+require_relative '../model/table_post_entry'
 
 class ContentGetPostsInfoStrategy
   include GetPostsInfoStrategy
@@ -10,7 +11,7 @@ class ContentGetPostsInfoStrategy
     date: 0,
     title: 1,
     link: 2,
-    prev: 3,
+    yesterday_comments_count: 3,
     time_table_begin: 4
   }.freeze
   private_constant :CELL_IDX
@@ -26,29 +27,34 @@ class ContentGetPostsInfoStrategy
 
     begin
       response = @sheets_client.service.get_spreadsheet_values(@spreadsheet_id, range)
+      raise "Response doesn't exist" if response.nil?
+
       rows = response.values
 
-      first_row = rows.find_index { |row| row[0].to_s.date? }
-      return [[], nil] unless first_row
+      post_entries_begin_idx = rows.find_index { |row| row[0].to_s.date? }
+      return [[], nil] unless post_entries_begin_idx
 
-      time_table = rows[first_row - 1][CELL_IDX[:time_table_begin]..]
+      post_entries = rows[post_entries_begin_idx..].take_while { |row| row[0].to_s.date? }.to_a
+      return [[], nil] if post_entries.empty?
 
-      posts = rows[first_row..].take_while { |row| row[0].to_s.date? }.to_a
+      time_table = rows[post_entries_begin_idx - 1][CELL_IDX[:time_table_begin]..]
 
-      filled_times = posts[0][CELL_IDX[:time_table_begin]..]
-      last_time = filled_times.length - 1
-
-      last_posts_time = time_table[last_time].to_s
-
-      posts = posts.map do |post|
-        post_obj = TablePost.new
-        post_obj.title = post[CELL_IDX[:title]].to_s
-        post_obj.url = post[CELL_IDX[:link]].to_s
-        post_obj.comments_count = (post[CELL_IDX[:time_table_begin] + last_time]).to_i
-        post_obj
+      post_entries = post_entries.map do |post|
+        TablePostEntry.new(
+          post[CELL_IDX[:date]].to_s,
+          post[CELL_IDX[:title]].to_s,
+          post[CELL_IDX[:link]].to_s,
+          post[CELL_IDX[:yesterday_comments_count]].to_i,
+          post[CELL_IDX[:time_table_begin]..]
+        )
       end
 
-      [posts, last_posts_time]
+      last_time = post_entries.map(&:last_comment_check_time_idx).max
+      last_posts_time = time_table[last_time].to_s
+
+      post_entries = post_entries.map { |pe| TablePost.new(pe.title, pe.last_comments_count, pe.url) }
+
+      [post_entries, last_posts_time]
     rescue StandardError => e
       raise "Error occurred: #{e.message}"
     end

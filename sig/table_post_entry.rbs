@@ -1,0 +1,19 @@
+class TablePostEntry
+
+  attr_accessor date: string
+
+  attr_accessor title: string
+
+  attr_accessor url: string
+
+  attr_accessor yesterday_comments_count: int
+
+  attr_accessor time_table: ::Array[int]
+
+  def initialize: (string, string, string, int, (::Array[int] | nil)) -> void
+
+  def last_comment_check_time_idx: -> int
+
+  def last_comments_count: -> int
+
+end

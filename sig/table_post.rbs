@@ -6,4 +6,6 @@ class TablePost
 
   attr_accessor url: string
 
+  def initialize: (string, int, string) -> void
+
 end
