@@ -16,15 +16,24 @@ class PhtClient
     # noinspection SpellCheckingInspection
     uri = @content_uri.merge "api/v1/publication/retrive/#{id}/"
 
-    retries = 5
-    loop do
-      response, code = @client.send_request uri, :get
-      return JSON.parse(response) if code == '200'
+    begin
+      call_with_retry uri, 5, :get
+    rescue StandardError
+      raise "Error retrieving post \##{id}"
+    end
+  end
 
-      refresh_tokens
+  def fetch_last_top_level_comment_id(post_id)
+    uri = @content_uri.merge "api/v1/parent-comment/list/#{post_id}/?page=1&ordering=-created_at"
 
-      retries -= 1
-      raise "Error retrieving post \##{id}" if retries.zero?
+    begin
+      response = call_with_retry uri, 5, :get
+      comments = response['results']
+      return nil if comments.empty?
+
+      comments.first['pk']
+    rescue StandardError
+      raise "Error retrieving comments for post \##{post_id}"
     end
   end
 
@@ -33,5 +42,22 @@ class PhtClient
 
     json = JSON.parse(response)
     @tokens.update json['refresh'], json['access']
+  end
+
+  private
+
+  def call_with_retry(uri, retries, method)
+    raise 'Invalid number of retries' if retries < 1
+
+    initial_retries = retries
+    loop do
+      response, code = @client.send_request uri, method
+      return JSON.parse(response) if code == '200'
+
+      refresh_tokens
+
+      retries -= 1
+      raise "Call failed after #{initial_retries} attempts" if retries.zero?
+    end
   end
 end

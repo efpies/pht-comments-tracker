@@ -14,7 +14,13 @@ class PhtClient
 
   def fetch_content_post: (int) -> Hash[string, untyped]
 
+  def fetch_last_top_level_comment_id: (int) -> (int | nil)
+
   def refresh_tokens: () -> void
+
+  private
+
+  def call_with_retry: (URI::Generic, int, Symbol) -> Hash[string, untyped]
 
 end
 
