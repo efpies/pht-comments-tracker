@@ -1,0 +1,15 @@
+class HttpClient
+
+  @client: Net::HTTP
+
+  @tokens: Tokens
+
+  def initialize: (URI::Generic, Tokens) -> void
+
+  def send_request: (URI::Generic, Symbol, untyped, bool) -> [string, string]
+
+  private
+
+  def build_request: (URI::Generic, Symbol, untyped, bool) -> Net::HTTPRequest
+
+end
