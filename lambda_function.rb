@@ -8,6 +8,7 @@ require_relative 'helpers'
 require_relative 'service/db_wrapper'
 require_relative 'service/tokens'
 require_relative 'service/pht_client'
+require_relative 'service/posts_checker'
 require_relative 'service/sheets_client'
 require_relative 'strategies/content_get_posts_info_strategy'
 require_relative 'strategies/content_check_post_strategy'
@@ -53,11 +54,13 @@ def lambda_handler(*)
     }
   ]
 
+
   response = sections.to_h do |section|
     puts "Requesting #{section[:key]}..."
 
     posts, last_time = section[:get_info_strategy].fetch_posts_info
-    posts = section[:check_post_strategy].check_posts posts
+    posts_checker = PostsChecker.new section[:check_post_strategy]
+    posts = posts_checker.check_posts posts
 
     key = section[:key]
     puts "#{key}: #{last_time}"

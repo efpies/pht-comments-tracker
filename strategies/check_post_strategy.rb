@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module CheckPostStrategy
-  def check_posts(_posts)
+  def check_post(_post)
     raise 'Not implemented'
   end
 end

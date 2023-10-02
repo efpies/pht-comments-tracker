@@ -1,0 +1,9 @@
+class PostsChecker
+
+  @check_post_strategy: CheckPostStrategy
+
+  def initialize: (CheckPostStrategy) -> void
+
+  def check_posts: (::Array[TablePost]) -> ::Array[Hash[Symbol, untyped]]
+
+end

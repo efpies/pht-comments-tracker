@@ -4,10 +4,6 @@ class ContentCheckPostStrategy
 
   def initialize: (PhtClient) -> void
 
-  def check_posts: (::Array[TablePost])-> ::Array[Hash[Symbol, untyped]]
-
-  private
-
   def check_post: (TablePost) -> Hash[Symbol, untyped]
 
 end
