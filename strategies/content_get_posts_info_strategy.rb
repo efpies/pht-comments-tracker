@@ -31,10 +31,10 @@ class ContentGetPostsInfoStrategy
 
       rows = response.values
 
-      post_entries_begin_idx = rows.find_index { |row| row[0].to_s.date? }
+      post_entries_begin_idx = rows.find_index { |row| row[CELL_IDX[:link]].to_s.url? }
       return [[], nil] unless post_entries_begin_idx
 
-      post_entries = rows[post_entries_begin_idx..].take_while { |row| row[0].to_s.date? }.to_a
+      post_entries = rows[post_entries_begin_idx..].take_while { |row| row[CELL_IDX[:link]].to_s.url? }.to_a
       return [[], nil] if post_entries.empty?
 
       time_table = rows[post_entries_begin_idx - 1][CELL_IDX[:time_table_begin]..]

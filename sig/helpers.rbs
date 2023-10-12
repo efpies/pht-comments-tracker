@@ -8,4 +8,6 @@ class String
 
   def date?: () -> bool
 
+  def url?: () -> bool
+
 end

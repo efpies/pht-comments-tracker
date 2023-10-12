@@ -10,4 +10,8 @@ class String
   def date?
     !!(self =~ /\d{1,2}\.\d{1,2}\.\d{2,4}/)
   end
+
+  def url?
+    !!(self =~ %r{https?://})
+  end
 end
