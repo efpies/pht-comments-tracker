@@ -4,8 +4,8 @@ class TablePost
 
   attr_accessor comments_count: int
 
-  attr_accessor url: string
+  attr_accessor post_id: (string|nil)
 
-  def initialize: (string, int, string) -> void
+  def initialize: (string, int, (string|nil)) -> void
 
 end

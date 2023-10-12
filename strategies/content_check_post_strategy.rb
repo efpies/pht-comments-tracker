@@ -10,13 +10,8 @@ class ContentCheckPostStrategy
   end
 
   def check_post(post)
-    url, old_count = post.url, post.comments_count
-    begin
-      # noinspection SpellCheckingInspection
-      id = url.match(%r{/publicate/(\d+)})[1]
-    rescue StandardError
-      raise 'Ошибочная ссылка'
-    end
+    id = post.post_id.to_i
+    old_count = post.comments_count
 
     post_content = @pht_client.fetch_content_post(id)
     last_comment_id = @pht_client.fetch_last_top_level_comment_id(id)
@@ -31,7 +26,7 @@ class ContentCheckPostStrategy
       title: post_content['title'],
       old_comments_count: old_count,
       new_comments_count: new_comments_count,
-      url: post_url,
+      url: post_url
     }
   end
 end

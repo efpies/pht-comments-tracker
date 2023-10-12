@@ -52,7 +52,16 @@ class ContentGetPostsInfoStrategy
       last_time = post_entries.map(&:last_comment_check_time_idx).max
       last_posts_time = time_table[last_time].to_s
 
-      post_entries = post_entries.map { |pe| TablePost.new(pe.title, pe.last_comments_count, pe.url) }
+      post_entries = post_entries.map do |pe|
+        begin
+          # noinspection SpellCheckingInspection
+          id = pe.url.match(%r{/publicate/(\d+)})[1]
+        rescue StandardError
+          raise 'Ошибочная ссылка'
+        end
+
+        TablePost.new(pe.title, pe.last_comments_count, id)
+      end
 
       [post_entries, last_posts_time]
     rescue StandardError => e
