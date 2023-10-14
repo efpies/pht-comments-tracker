@@ -11,6 +11,7 @@ require_relative 'service/pht_client'
 require_relative 'service/posts_checker'
 require_relative 'service/sheets_client'
 require_relative 'strategies/pht/pht_post_adapter'
+require_relative 'strategies/pht/community_post_adapter'
 require_relative 'strategies/pht/content_post_adapter'
 require_relative 'strategies/content_get_posts_info_strategy'
 require_relative 'strategies/content_check_post_strategy'
@@ -52,6 +53,11 @@ def lambda_handler(*)
     {
       key: 'old',
       get_info_strategy: ContentGetPostsInfoStrategy.new(sheets_client, config[:spreadsheets][:id], 'Старые посты', ContentPostAdapter.new),
+      check_post_strategy: ContentCheckPostStrategy.new(pht_client)
+    },
+    {
+      key: 'community',
+      get_info_strategy: ContentGetPostsInfoStrategy.new(sheets_client, config[:spreadsheets][:id], 'Комьюнити', CommunityPostAdapter.new),
       check_post_strategy: ContentCheckPostStrategy.new(pht_client)
     }
   ]
