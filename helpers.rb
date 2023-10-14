@@ -11,7 +11,7 @@ class String
     !!(self =~ /\d{1,2}\.\d{1,2}\.\d{2,4}/)
   end
 
-  def url?
-    !!(self =~ %r{https?://})
+  def url?(prefix = nil)
+    !!(self =~ %r{https?://#{prefix}})
   end
 end

@@ -1,14 +1,14 @@
 class ContentGetPostsInfoStrategy
 
-  CELL_IDX: Hash[Symbol, int]
-
   @sheets_client: SheetsClient
 
   @spreadsheet_id: string
 
   @table: string
 
-  def initialize: (SheetsClient, string, string) -> void
+  @adapter: PhtPostAdapter
+
+  def initialize: (SheetsClient, string, string, PhtPostAdapter) -> void
 
   def fetch_posts_info: -> [::Array[TablePost], string]
 

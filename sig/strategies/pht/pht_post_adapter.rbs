@@ -1,0 +1,9 @@
+module PhtPostAdapter
+  def get_post_id: (TablePostEntry) -> int
+
+  def get_time_table: (::Array[Object]) -> ::Array[Object]
+
+  def post?: (::Array[Object]) -> bool
+
+  def to_table_post_entry: (::Array[Object]) -> TablePostEntry
+end
