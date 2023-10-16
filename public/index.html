@@ -191,6 +191,10 @@
             "title": "Старые посты",
         },
         {
+            "key": "wiki",
+            "title": "Wiki",
+        },
+        {
             "key": "community",
             "title": "Комьюнити",
         },
@@ -258,28 +262,50 @@
 
             commentSections.forEach(function (section) {
                 const key = section['key'];
-                const posts = comments[key]['posts'];
-                if (posts === undefined || posts === null || posts.length === 0) {
+                const group = comments[key]
+                if (group === undefined || group === null || group.length === 0) {
                     return;
                 }
 
-                const sectionElement = commentsSectionTemplate.content.cloneNode(true);
-                sectionElement.querySelector("h3").innerHTML = section["title"];
-                sectionElement.querySelector("button").onclick = function() {
-                    copyCommentsCount(key);
-                };
-
-                const lastCheck = sectionElement.querySelector(".last-check");
-                lastCheck.innerHTML = comments[key]['time'];
-
-                const table = sectionElement.querySelector("table");
-                posts.forEach(function (comment) {
-                    insertComment(table, comment);
-                });
-
                 const commentsContainer = document.getElementById("comments-container");
+                const groupHeader = document.createElement("h2");
+                groupHeader.innerHTML = section["title"];
                 commentsContainer.appendChild(document.createElement("hr"));
-                commentsContainer.appendChild(sectionElement);
+                commentsContainer.appendChild(groupHeader);
+
+                const multiTable = group.length > 1;
+
+                group.forEach(function (pair, groupId) {
+                    const title = pair[0];
+                    const time = pair[1]['time'];
+                    const posts = pair[1]['posts'];
+                    if (posts === undefined || posts === null || posts.length === 0) {
+                        return;
+                    }
+
+                    const sectionElement = commentsSectionTemplate.content.cloneNode(true);
+
+                    const groupTitle = sectionElement.querySelector("h3");
+                    groupTitle.style.display = multiTable ? "block" : "none";
+                    if (multiTable) {
+                        groupTitle.innerHTML = title;
+                    }
+
+                    sectionElement.querySelector("button").onclick = function () {
+                        copyCommentsCount(key, groupId);
+                    };
+
+                    const lastCheck = sectionElement.querySelector(".last-check");
+                    lastCheck.innerHTML = time;
+
+                    const table = sectionElement.querySelector("table");
+                    posts.forEach(function (comment) {
+                        insertComment(table, comment);
+                    });
+
+                    commentsContainer.appendChild(document.createElement("hr"));
+                    commentsContainer.appendChild(sectionElement);
+                });
             });
 
             const timeMsk = timeInUTC3();
@@ -296,8 +322,8 @@
         });
     }
 
-    function copyCommentsCount(key) {
-        const data = getNewCommentsCount(comments[key]['posts']).join("\n");
+    function copyCommentsCount(key, groupId) {
+        const data = getNewCommentsCount(comments[key][groupId][1]['posts']).join("\n");
         copyToClipboard(data);
     }
 

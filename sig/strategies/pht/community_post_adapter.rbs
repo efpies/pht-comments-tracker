@@ -5,6 +5,10 @@ class CommunityPostAdapter
 
   def get_time_table: (::Array[Object]) -> ::Array[Object]
 
+  def header?: (::Array[Object]) -> bool
+
+  def multi_table?: -> bool
+
   def post?: (::Array[Object]) -> bool
 
   def to_table_post_entry: (::Array[Object]) -> TablePostEntry

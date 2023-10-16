@@ -10,6 +10,8 @@ class ContentGetPostsInfoStrategy
 
   def initialize: (SheetsClient, string, string, PhtPostAdapter) -> void
 
-  def fetch_posts_info: -> [::Array[TablePost], string]
+  def fetch_posts_info: -> Hash[string, [::Array[TablePost], string]]
+
+  def parse_subtable: (::Array[::Array[Object]])-> [::Array[TablePost], string]
 
 end

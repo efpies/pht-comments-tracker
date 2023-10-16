@@ -1,4 +1,4 @@
-module PhtPostAdapter
+class WikiPostAdapter
   def get_post_id: (TablePostEntry) -> int
 
   def get_time_table: (::Array[Object]) -> ::Array[Object]

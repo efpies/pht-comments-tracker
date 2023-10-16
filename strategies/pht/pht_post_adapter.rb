@@ -1,6 +1,14 @@
 # frozen_string_literal: true
 
 module PhtPostAdapter
+  def multi_table?
+    raise 'Not implemented'
+  end
+
+  def header?(_row)
+    raise 'Not implemented'
+  end
+
   def post?(_row)
     raise 'Not implemented'
   end

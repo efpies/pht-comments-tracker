@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CommunityPostAdapter
+class WikiPostAdapter
   include PhtPostAdapter
 
   CELL_IDX = {
@@ -12,15 +12,17 @@ class CommunityPostAdapter
   private_constant :CELL_IDX
 
   def multi_table?
-    false
+    true
   end
 
   def header?(row)
-    row[CELL_IDX[:link]].to_s.url?('content.pht.life')
+    link = row[CELL_IDX[:link]].to_s
+    link.url?('content.pht.life/#/listwiki')
   end
 
   def post?(row)
-    row[CELL_IDX[:link]].to_s.url?('content.pht.life')
+    link = row[CELL_IDX[:link]].to_s
+    link.url?('content.pht.life') && !header?(row)
   end
 
   def to_table_post_entry(row)
@@ -39,7 +41,7 @@ class CommunityPostAdapter
 
   def get_post_id(post)
     # noinspection SpellCheckingInspection
-    post.url.match(%r{/topic/(\d+)})[1]
+    post.url.match(%r{/publicate/(\d+)})[1]
   rescue StandardError
     raise 'Ошибочная ссылка'
   end

@@ -13,6 +13,7 @@ require_relative 'service/sheets_client'
 require_relative 'strategies/pht/pht_post_adapter'
 require_relative 'strategies/pht/community_post_adapter'
 require_relative 'strategies/pht/content_post_adapter'
+require_relative 'strategies/pht/wiki_post_adapter'
 require_relative 'strategies/content_get_posts_info_strategy'
 require_relative 'strategies/content_check_post_strategy'
 require_relative 'model/table_post'
@@ -56,28 +57,37 @@ def lambda_handler(*)
       check_post_strategy: ContentCheckPostStrategy.new(pht_client)
     },
     {
+      key: 'wiki',
+      get_info_strategy: ContentGetPostsInfoStrategy.new(sheets_client, config[:spreadsheets][:id], 'Wiki', WikiPostAdapter.new),
+      check_post_strategy: ContentCheckPostStrategy.new(pht_client)
+    },
+    {
       key: 'community',
       get_info_strategy: ContentGetPostsInfoStrategy.new(sheets_client, config[:spreadsheets][:id], 'Комьюнити', CommunityPostAdapter.new),
       check_post_strategy: ContentCheckPostStrategy.new(pht_client)
     }
   ]
 
-
-  response = sections.to_h do |section|
+  response = (sections.map do |section|
     puts "Requesting #{section[:key]}..."
 
-    posts, last_time = section[:get_info_strategy].fetch_posts_info
+    posts_info = section[:get_info_strategy].fetch_posts_info
     posts_checker = PostsChecker.new section[:check_post_strategy]
-    posts = posts_checker.check_posts posts
 
-    key = section[:key]
-    puts "#{key}: #{last_time}"
+    pi = posts_info.map do |key, pair|
+      posts = posts_checker.check_posts pair[0]
+      last_time = pair[1]
 
-    [key, {
-      time: last_time,
-      posts: posts
-    }]
-  end
+      puts "#{key}: #{last_time}"
+
+      [key, {
+        time: last_time,
+        posts: posts
+      }]
+    end
+
+    [section[:key], pi]
+  end).to_h
 
   {
     statusCode: 200,

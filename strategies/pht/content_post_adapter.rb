@@ -12,6 +12,14 @@ class ContentPostAdapter
   }.freeze
   private_constant :CELL_IDX
 
+  def multi_table?
+    false
+  end
+
+  def header?(_row)
+    row[CELL_IDX[:link]].to_s.url?('content.pht.life')
+  end
+
   def post?(row)
     row[CELL_IDX[:link]].to_s.url?('content.pht.life')
   end
