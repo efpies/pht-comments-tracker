@@ -1,8 +1,10 @@
 class PostsChecker
 
+  @adapter: PhtPostAdapter
+
   @check_post_strategy: CheckPostStrategy
 
-  def initialize: (CheckPostStrategy) -> void
+  def initialize: (CheckPostStrategy, PhtPostAdapter) -> void
 
   def check_posts: (::Array[TablePost]) -> ::Array[Hash[Symbol, untyped]]
 

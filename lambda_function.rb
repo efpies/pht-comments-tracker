@@ -8,6 +8,7 @@ require_relative 'helpers'
 require_relative 'service/db_wrapper'
 require_relative 'service/tokens'
 require_relative 'service/pht_client'
+require_relative 'service/pht_post_service'
 require_relative 'service/posts_checker'
 require_relative 'service/sheets_client'
 require_relative 'strategies/pht/pht_post_adapter'
@@ -44,27 +45,29 @@ def lambda_handler(*)
 
   pht_client = PhtClient.new config[:pht][:content_uri], config[:pht][:refresh_uri], tokens
   sheets_client = SheetsClient.new config[:spreadsheets][:secret_key]
+  pht_post_service = PhtPostService.new pht_client
+  pht_post_service.preload
 
   sections = [
     {
       key: 'new',
       get_info_strategy: ContentGetPostsInfoStrategy.new(sheets_client, config[:spreadsheets][:id], 'Новые посты', ContentPostAdapter.new),
-      check_post_strategy: ContentCheckPostStrategy.new(pht_client)
+      check_post_strategy: ContentCheckPostStrategy.new(pht_client, pht_post_service)
     },
     {
       key: 'old',
       get_info_strategy: ContentGetPostsInfoStrategy.new(sheets_client, config[:spreadsheets][:id], 'Старые посты', ContentPostAdapter.new),
-      check_post_strategy: ContentCheckPostStrategy.new(pht_client)
+      check_post_strategy: ContentCheckPostStrategy.new(pht_client, pht_post_service)
     },
     {
       key: 'wiki',
       get_info_strategy: ContentGetPostsInfoStrategy.new(sheets_client, config[:spreadsheets][:id], 'Wiki', WikiPostAdapter.new),
-      check_post_strategy: ContentCheckPostStrategy.new(pht_client)
+      check_post_strategy: ContentCheckPostStrategy.new(pht_client, pht_post_service)
     },
     {
       key: 'community',
       get_info_strategy: ContentGetPostsInfoStrategy.new(sheets_client, config[:spreadsheets][:id], 'Комьюнити', CommunityPostAdapter.new),
-      check_post_strategy: ContentCheckPostStrategy.new(pht_client)
+      check_post_strategy: ContentCheckPostStrategy.new(pht_client, pht_post_service)
     }
   ]
 

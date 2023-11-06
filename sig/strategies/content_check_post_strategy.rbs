@@ -1,9 +1,13 @@
 class ContentCheckPostStrategy
 
+  @adapter: PhtPostAdapter
+
   @pht_client: PhtClient
 
-  def initialize: (PhtClient) -> void
+  @post_service: PhtPostService
 
-  def check_post: (TablePost) -> Hash[Symbol, untyped]
+  def initialize: (PhtClient, PhtPostService) -> void
+
+  def check_post: (TablePost, Hash[int, untyped]) -> Hash[Symbol, untyped]
 
 end

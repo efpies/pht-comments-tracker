@@ -1,0 +1,20 @@
+class PhtPostService
+  @flow_page: int
+  @has_next_flow_page: bool
+  @known: Hash[int, Hash[string, untyped]]
+  @pht_client: PhtClient
+
+  def initialize: (PhtClient) -> void
+
+  def get_flow_post: (int) -> Hash[string, untyped]
+
+  def preload: -> void
+
+  private
+
+  def get_post: (string, int) -> Hash[string, untyped]
+
+  def preload_next_page: -> bool
+
+  def preload_wiki: -> void
+end

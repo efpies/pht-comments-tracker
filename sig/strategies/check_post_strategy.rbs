@@ -1,5 +1,5 @@
 module CheckPostStrategy
 
-  def check_post: (TablePost) -> Hash[Symbol, untyped]
+  def check_post: (TablePost, Hash[int, untyped]) -> Hash[Symbol, untyped]
 
 end

@@ -16,6 +16,14 @@ class PhtClient
 
   def fetch_last_top_level_comment_id: (int) -> (int | nil)
 
+  def load_fix_page: -> Hash[int, Hash[string, untyped]]
+
+  def load_page: -> Hash[string, untyped]
+
+  def load_pages: -> Hash[int, Hash[string, untyped]]
+
+  def load_wiki_ids: -> ::Array[int]
+
   def refresh_tokens: () -> void
 
   private
