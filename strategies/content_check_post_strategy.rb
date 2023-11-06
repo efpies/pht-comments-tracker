@@ -5,9 +5,10 @@ require_relative 'check_post_strategy'
 class ContentCheckPostStrategy
   include CheckPostStrategy
 
-  def initialize(pht_client, post_service)
+  def initialize(pht_client, post_service, content_uri)
     @pht_client = pht_client
     @post_service = post_service
+    @content_uri = content_uri
   end
 
   def check_post(post)
@@ -19,7 +20,7 @@ class ContentCheckPostStrategy
     new_comments_count = post_content['comments_count']
     new_comments_count = 'н/к' if new_comments_count.zero? && post_content['disable_comments']
 
-    post_url = "https://content.pht.life/#/publicate/#{id}?ordering=-created_at"
+    post_url = "https://#{@content_uri.host}/#/publicate/#{id}?ordering=-created_at"
 
     unless new_comments_count.zero?
       last_comment_id = @pht_client.fetch_last_top_level_comment_id(id)

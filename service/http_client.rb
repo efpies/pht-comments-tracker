@@ -34,7 +34,7 @@ class HttpClient
     request['Authorization'] = "Secret #{@tokens.access}" if auth
     request['Connection'] = 'keep-alive'
     request['DNT'] = '1'
-    request['Referer'] = 'https://content.pht.life/'
+    request['Referer'] = "https://#{@client.address}"
     request['Sec-Fetch-Dest'] = 'empty'
     request['Sec-Fetch-Mode'] = 'cors'
     request['Sec-Fetch-Site'] = 'same-site'

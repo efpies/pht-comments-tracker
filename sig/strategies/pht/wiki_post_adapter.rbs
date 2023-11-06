@@ -1,9 +1,13 @@
 class WikiPostAdapter
+  @content_uri: URI::Generic
+
   def get_post_id: (TablePostEntry) -> int
 
   def get_time_table: (::Array[Object]) -> ::Array[Object]
 
   def header?: (::Array[Object]) -> bool
+
+  def initialize: (URI::Generic) -> void
 
   def multi_table?: -> bool
 

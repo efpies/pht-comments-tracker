@@ -11,18 +11,22 @@ class WikiPostAdapter
   }.freeze
   private_constant :CELL_IDX
 
+  def initialize(content_uri)
+    @content_uri = content_uri
+  end
+
   def multi_table?
     true
   end
 
   def header?(row)
     link = row[CELL_IDX[:link]].to_s
-    link.url?('content.pht.life/#/listwiki')
+    link.url?("#{@content_uri.host}/#/listwiki")
   end
 
   def post?(row)
     link = row[CELL_IDX[:link]].to_s
-    link.url?('content.pht.life') && !header?(row)
+    link.url?(@content_uri.host) && !header?(row)
   end
 
   def to_table_post_entry(row)

@@ -2,11 +2,13 @@ class ContentCheckPostStrategy
 
   @adapter: PhtPostAdapter
 
+  @content_uri: URI::Generic
+
   @pht_client: PhtClient
 
   @post_service: PhtPostService
 
-  def initialize: (PhtClient, PhtPostService) -> void
+  def initialize: (PhtClient, PhtPostService, URI::Generic) -> void
 
   def check_post: (TablePost, Hash[int, untyped]) -> Hash[Symbol, untyped]
 

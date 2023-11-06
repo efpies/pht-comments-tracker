@@ -51,23 +51,23 @@ def lambda_handler(*)
   sections = [
     {
       key: 'new',
-      get_info_strategy: ContentGetPostsInfoStrategy.new(sheets_client, config[:spreadsheets][:id], 'Новые посты', ContentPostAdapter.new),
-      check_post_strategy: ContentCheckPostStrategy.new(pht_client, pht_post_service)
+      get_info_strategy: ContentGetPostsInfoStrategy.new(sheets_client, config[:spreadsheets][:id], 'Новые посты', ContentPostAdapter.new(config[:pht][:content_uri])),
+      check_post_strategy: ContentCheckPostStrategy.new(pht_client, pht_post_service, config[:pht][:content_uri])
     },
     {
       key: 'old',
-      get_info_strategy: ContentGetPostsInfoStrategy.new(sheets_client, config[:spreadsheets][:id], 'Старые посты', ContentPostAdapter.new),
-      check_post_strategy: ContentCheckPostStrategy.new(pht_client, pht_post_service)
+      get_info_strategy: ContentGetPostsInfoStrategy.new(sheets_client, config[:spreadsheets][:id], 'Старые посты', ContentPostAdapter.new(config[:pht][:content_uri])),
+      check_post_strategy: ContentCheckPostStrategy.new(pht_client, pht_post_service, config[:pht][:content_uri])
     },
     {
       key: 'wiki',
-      get_info_strategy: ContentGetPostsInfoStrategy.new(sheets_client, config[:spreadsheets][:id], 'Wiki', WikiPostAdapter.new),
-      check_post_strategy: ContentCheckPostStrategy.new(pht_client, pht_post_service)
+      get_info_strategy: ContentGetPostsInfoStrategy.new(sheets_client, config[:spreadsheets][:id], 'Wiki', WikiPostAdapter.new(config[:pht][:content_uri])),
+      check_post_strategy: ContentCheckPostStrategy.new(pht_client, pht_post_service, config[:pht][:content_uri])
     },
     {
       key: 'community',
-      get_info_strategy: ContentGetPostsInfoStrategy.new(sheets_client, config[:spreadsheets][:id], 'Комьюнити', CommunityPostAdapter.new),
-      check_post_strategy: ContentCheckPostStrategy.new(pht_client, pht_post_service)
+      get_info_strategy: ContentGetPostsInfoStrategy.new(sheets_client, config[:spreadsheets][:id], 'Комьюнити', CommunityPostAdapter.new(config[:pht][:content_uri])),
+      check_post_strategy: ContentCheckPostStrategy.new(pht_client, pht_post_service, config[:pht][:content_uri])
     }
   ]
 

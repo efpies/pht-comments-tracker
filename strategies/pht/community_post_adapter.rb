@@ -11,16 +11,20 @@ class CommunityPostAdapter
   }.freeze
   private_constant :CELL_IDX
 
+  def initialize(content_uri)
+    @content_uri = content_uri
+  end
+
   def multi_table?
     false
   end
 
   def header?(row)
-    row[CELL_IDX[:link]].to_s.url?('content.pht.life')
+    row[CELL_IDX[:link]].to_s.url?(@content_uri.host)
   end
 
   def post?(row)
-    row[CELL_IDX[:link]].to_s.url?('content.pht.life')
+    row[CELL_IDX[:link]].to_s.url?(@content_uri.host)
   end
 
   def to_table_post_entry(row)
