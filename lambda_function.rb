@@ -33,8 +33,8 @@ def lambda_handler(*)
       secret_key: ENV['SPREADSHEET_SECRET_KEY']
     },
     pht: {
-      content_uri: URI('https://content.pht.life/'),
-      refresh_uri: URI('https://pht.life/jwt-auth/api/content/token/refresh/')
+      content_uri: URI('https://content.pht.space/'),
+      refresh_uri: URI('https://pht.space/jwt-auth/api/content/token/refresh/')
     }
   }
 
