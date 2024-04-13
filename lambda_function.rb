@@ -19,7 +19,10 @@ require_relative 'strategies/content_get_posts_info_strategy'
 require_relative 'strategies/content_check_post_strategy'
 require_relative 'model/table_post'
 
-def lambda_handler(*)
+def lambda_handler(event:, context:)
+  flow = event['rawPath'][1..].split('/').first.to_i
+  flow = 30 if flow == 0
+
   config = {
     aws: {
       profile: ENV['AWS_PROFILE'],
@@ -29,7 +32,7 @@ def lambda_handler(*)
       }
     },
     spreadsheets: {
-      id: ENV['SPREADSHEET_ID'],
+      id: ENV["SPREADSHEET_ID_#{flow}"],
       secret_key: ENV['SPREADSHEET_SECRET_KEY']
     },
     pht: {

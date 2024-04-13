@@ -91,7 +91,20 @@
                 -webkit-appearance: none;
             }
 
-            #comments, #error {
+            #loader, #comments, #error {
+                display: none;
+            }
+
+            #choose-your-flow {
+                display: flex;
+                flex-direction: column;
+            }
+
+            #choose-your-flow button {
+                height: 200px;
+            }
+
+            .flow-30, .flow-31 {
                 display: none;
             }
 
@@ -135,6 +148,10 @@
 <body>
 
 <div class="container">
+    <div id="choose-your-flow">
+        <button onclick="loadFlow(30)">30 поток</button>
+        <button onclick="loadFlow(31)">31 поток</button>
+    </div>
     <div id="loader">
         <h1>Загрузка...</h1>
     </div>
@@ -146,7 +163,7 @@
         <div id="how-to-invite-1" class="how-to-invite"><button onclick="showHint(true, 1)">Инструкция</button></div>
         <div id="how-to-1" class="how-to">
             <div class="header">Как пользоваться страничкой-табличкой?</div>
-            <p>Эта страничка показывает данные из <a target="_blank" href="https://docs.google.com/spreadsheets/d/15PKbl87AIV_dJeXSXQ2X4XDaUpALkuinrAo640T38_I/">таблички</a>, с которой работают кураторы, работающие с комментами.</p>
+            <p>Эта страничка показывает данные из <a class="flow-30" target="_blank" href="https://docs.google.com/spreadsheets/d/15PKbl87AIV_dJeXSXQ2X4XDaUpALkuinrAo640T38_I/">таблички</a><a class="flow-31" target="_blank" href="https://docs.google.com/spreadsheets/d/1yP1sOAhWhqGl183hpyJYqx4zIx4vVBVjxuT-tdw_3E8/">таблички</a>, с которой работают кураторы, работающие с комментами.</p>
             <p>При открытии страницы происходит загрузка количества комментов для статей, которые расположены на вкладках <span class="hint-emphasis quoted">Новые посты</span> и <span class="hint-emphasis quoted">Старые посты</span>, по ссылкам из колонки <span class="hint-emphasis quoted">Ссылка на пост</span>.</p>
             <p>В колонке <span class="hint-emphasis quoted">Было</span> находится последнее записанное количество комментов из таблицы.</p>
             <p>В колонке <span class="hint-emphasis quoted">Стало</span> — количество комментов в статье на текущий момент. Если появились новые, это выделяется <span class="has-new">цветом</span>.</p>
@@ -228,8 +245,8 @@
         document.getElementById(`how-to-invite-${id}`).style.display = show ? "none" : "block";
     }
 
-    async function fetchComments() {
-        return await fetch("https://dzhtdpmctlkydvyks7nqijgkt40hvnha.lambda-url.eu-north-1.on.aws");
+    async function fetchComments(flow) {
+        return await fetch(`https://dzhtdpmctlkydvyks7nqijgkt40hvnha.lambda-url.eu-north-1.on.aws/${flow}`);
     }
 
     function insertComment(table, comment) {
@@ -270,74 +287,79 @@
     }
 
     let comments;
-    fetchComments().then(function (response) {
-        if (!response.ok) {
+    function loadFlow(flow) {
+        document.getElementById("choose-your-flow").style.display = "none";
+        document.getElementById("loader").style.display = "block";
+        Array.from(document.querySelectorAll(`.flow-${flow}`)).forEach(e => e.style.display = "inline");
+        fetchComments(flow).then(function (response) {
+            if (!response.ok) {
+                document.getElementById("loader").style.display = "none";
+                document.getElementById("error").style.display = "block";
+                document.getElementById("error-description").innerHTML = response.statusText;
+                return;
+            }
+
             document.getElementById("loader").style.display = "none";
-            document.getElementById("error").style.display = "block";
-            document.getElementById("error-description").innerHTML = response.statusText;
-            return;
-        }
+            document.getElementById("comments").style.display = "block";
+            response.json().then(function (newComments) {
+                comments = newComments;
 
-        document.getElementById("loader").style.display = "none";
-        document.getElementById("comments").style.display = "block";
-        response.json().then(function (newComments) {
-            comments = newComments;
-
-            commentSections.forEach(function (section) {
-                const key = section['key'];
-                const group = comments[key]
-                if (group === undefined || group === null || group.length === 0) {
-                    return;
-                }
-
-                const commentsContainer = document.getElementById("comments-container");
-                const groupHeader = document.createElement("h2");
-                groupHeader.innerHTML = section["title"];
-                commentsContainer.appendChild(document.createElement("hr"));
-                commentsContainer.appendChild(groupHeader);
-
-                const multiTable = group.length > 1;
-
-                group.forEach(function (pair, groupId) {
-                    const title = pair[0];
-                    const time = pair[1]['time'];
-                    const posts = pair[1]['posts'];
-                    if (posts === undefined || posts === null || posts.length === 0) {
+                commentSections.forEach(function (section) {
+                    const key = section['key'];
+                    const group = comments[key]
+                    if (group === undefined || group === null || group.length === 0) {
                         return;
                     }
 
-                    const sectionElement = commentsSectionTemplate.content.cloneNode(true);
-
-                    const groupTitle = sectionElement.querySelector("h3");
-                    groupTitle.style.display = multiTable ? "block" : "none";
-                    if (multiTable) {
-                        groupTitle.innerHTML = title;
-                    }
-
-                    sectionElement.querySelector("button").onclick = function () {
-                        copyCommentsCount(key, groupId);
-                    };
-
-                    const lastCheck = sectionElement.querySelector(".last-check");
-                    lastCheck.innerHTML = time;
-
-                    const table = sectionElement.querySelector("table");
-                    posts.forEach(function (comment) {
-                        insertComment(table, comment);
-                    });
-
+                    const commentsContainer = document.getElementById("comments-container");
+                    const groupHeader = document.createElement("h2");
+                    groupHeader.innerHTML = section["title"];
                     commentsContainer.appendChild(document.createElement("hr"));
-                    commentsContainer.appendChild(sectionElement);
+                    commentsContainer.appendChild(groupHeader);
+
+                    const multiTable = group.length > 1;
+
+                    group.forEach(function (pair, groupId) {
+                        const title = pair[0];
+                        const time = pair[1]['time'];
+                        const posts = pair[1]['posts'];
+                        if (posts === undefined || posts === null || posts.length === 0) {
+                            return;
+                        }
+
+                        const sectionElement = commentsSectionTemplate.content.cloneNode(true);
+
+                        const groupTitle = sectionElement.querySelector("h3");
+                        groupTitle.style.display = multiTable ? "block" : "none";
+                        if (multiTable) {
+                            groupTitle.innerHTML = title;
+                        }
+
+                        sectionElement.querySelector("button").onclick = function () {
+                            copyCommentsCount(key, groupId);
+                        };
+
+                        const lastCheck = sectionElement.querySelector(".last-check");
+                        lastCheck.innerHTML = time;
+
+                        const table = sectionElement.querySelector("table");
+                        posts.forEach(function (comment) {
+                            insertComment(table, comment);
+                        });
+
+                        commentsContainer.appendChild(document.createElement("hr"));
+                        commentsContainer.appendChild(sectionElement);
+                    });
+                });
+
+                const timeMsk = timeInUTC3();
+                const currentTime = document.getElementsByClassName("current-time");
+                Array.from(currentTime).forEach(function (element) {
+                    element.innerHTML = timeMsk;
                 });
             });
-
-            const timeMsk = timeInUTC3();
-            const currentTime = document.getElementsByClassName("current-time");
-            Array.from(currentTime).forEach(function (element) {
-                element.innerHTML = timeMsk;
-            });
         });
-    });
+    }
 
     function getNewCommentsCount(posts) {
         return posts.map(function (comment) {
